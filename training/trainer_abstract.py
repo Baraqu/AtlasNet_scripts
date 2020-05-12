@@ -45,7 +45,7 @@ class TrainerAbstract(object):
                 mkdir("log")
             if not exists(self.opt.dir_name):
                 print("creating folder  ", self.opt.dir_name)
-                mkdir(self.opt.dir_name)
+                mkdir("K:\\AtlasNet\\"+self.opt.dir_name)
 
         self.opt.log_path = join(self.opt.dir_name, "log.txt")
         self.opt.optimizer_path = join(self.opt.dir_name, 'optimizer.pth')

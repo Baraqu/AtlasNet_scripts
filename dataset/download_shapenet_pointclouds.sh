@@ -10,6 +10,6 @@ mkdir data
 gdrive_download 1MMCYOqSalz77dduKahqDEQKFP9aCvUCy data/ShapeNetV1PointCloud.zip
 cd data
 unzip ShapeNetV1PointCloud.zip
-rm ShapeNetV1PointCloud.zip
+
 cd ..
 cd ..

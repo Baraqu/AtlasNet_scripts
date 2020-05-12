@@ -1,4 +1,4 @@
-import pymesh
+from plyfile import *
 import numpy as np
 from os.path import join, dirname
 
@@ -34,4 +34,16 @@ def save(mesh, path, colormap):
             mesh.set_attribute("vertex_blue", colormap.colormap[vertex_sources][:, 2])
     except:
         pass
-    pymesh.save_mesh(path[:-3] + "ply", mesh, *mesh.get_attribute_names(), ascii=True)
+    vertex = [tuple(mesh.vertices[i]) for i in range(len(mesh.vertices))]
+    vertex = np.array(vertex, dtype=[('x', 'f4'), ('y', 'f4'),  ('z', 'f4')])
+    #print(vertex)
+
+    face = [tuple([mesh.faces[i]]) for i in range(len(mesh.faces))]
+    face = np.array(face,  dtype=[('vertex_indices', 'i4', (3,))])
+
+    PlyData(
+        [
+            PlyElement.describe(vertex, 'vertex'),
+            PlyElement.describe(face, 'face')
+        ],
+        text=True).write(path[:-3] + "ply")

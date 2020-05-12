@@ -3,7 +3,7 @@ import os
 import auxiliary.html_report as html_report
 import numpy as np
 from easydict import EasyDict
-import pymesh
+import t800mesh as ms
 
 from training.trainer_abstract import TrainerAbstract
 import dataset.mesh_processor as mesh_processor
@@ -158,7 +158,7 @@ class Trainer(TrainerAbstract, TrainerLoss, TrainerIteration, TrainerDataset, Tr
             vertices = torch.from_numpy(mesh.vertices).clone().unsqueeze(0)
             get_normalization.operation.invert()
             unnormalized_vertices = get_normalization.operation.apply(vertices)
-            mesh = pymesh.form_mesh(vertices=unnormalized_vertices.squeeze().numpy(), faces=mesh.faces)
+            mesh = ms.Mesh(vertices=unnormalized_vertices.squeeze().numpy(), faces=mesh.faces)
 
         if self.opt.demo:
             path = demo_path.split('.')

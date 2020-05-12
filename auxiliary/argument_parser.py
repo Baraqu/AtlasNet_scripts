@@ -85,7 +85,7 @@ def parser():
 
     if opt.dir_name == "":
         # Create default dirname
-        opt.dir_name = join('log', opt.id + now.isoformat())
+        opt.dir_name = join('log', now.isoformat().replace(":","_"))
 
 
     # If running a demo, check if input is an image or a pointcloud
@@ -106,6 +106,8 @@ def parser():
             opt.dir_name = "./training/trained_models/atlasnet_singleview_1_sphere"
         elif opt.reload_model_path == "" and not opt.SVR:
             opt.dir_name = "./training/trained_models/atlasnet_autoencoder_1_sphere"
+        else:
+            opt.dir_name = opt.reload_model_path
 
 
     if exists(join(opt.dir_name, "options.json")):

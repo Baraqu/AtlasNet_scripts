@@ -35,11 +35,21 @@ class TrainerModel(object):
         Reload entire model or only decoder (atlasnet) depending on the options
         :return:
         """
+        #self.opt.reload_model_path="network.pth"
         if self.opt.reload_model_path != "":
             yellow_print(f"Network weights loaded from  {self.opt.reload_model_path}!")
             # print(self.network.state_dict().keys())
             # print(torch.load(self.opt.reload_model_path).keys())
-            self.network.module.load_state_dict(torch.load(self.opt.reload_model_path, map_location='cuda:0'))
+
+            state_dict = torch.load(self.opt.reload_model_path, map_location='cuda:0')
+            # create new OrderedDict that does not contain `module.`
+            from collections import OrderedDict
+            new_state_dict = OrderedDict()
+            for k, v in state_dict.items():
+                name = k[7:] # remove `module.`
+                new_state_dict[name] = v
+
+            self.network.module.load_state_dict(new_state_dict)
 
         elif self.opt.reload_decoder_path != "":
             opt = deepcopy(self.opt)

@@ -60,8 +60,9 @@ class ShapeNet(data.Dataset):
 
             # Select classes
             if opt.shapenet13:
-                opt.class_choice = ["airplane", "bench", "cabinet", "car", "chair", "display", "lamp", "loudspeaker",
-                                    "rifle", "sofa", "table", "telephone", "vessel"]
+                opt.class_choice = ["airplane", "bench", "cabinet", "car", "chair", "display"]
+                                    # ["airplane", "bench", "cabinet", "car", "chair", "display", "lamp", "loudspeaker",
+                                    # "rifle", "sofa", "table", "telephone", "vessel"]
 
             if len(opt.class_choice) > 0:
                 new_classes = []
@@ -127,6 +128,7 @@ class ShapeNet(data.Dataset):
             with open(self.path_dataset + "info.pkl", "rb") as fp:
                 self.data_metadata = pickle.load(fp)
 
+            print(self.path_dataset + "points.pth")
             self.data_points = torch.load(self.path_dataset + "points.pth")
         else:
             # Preprocess dataset and put in cache for future fast reload
@@ -228,8 +230,16 @@ class ShapeNet(data.Dataset):
         if ext == "npy":
             points = np.load(path)
         elif ext == "ply" or ext == "obj":
-            import pymesh
-            points = pymesh.load_mesh(path).vertices
+            f = open(path)
+            line = f.readline()
+            points= []
+            while line: 
+                points.extend([[float(line.split()[1]), float(line.split()[2]), float(line.split()[3])]])
+                line = f.readline() 
+            
+            f.close()  
+            
+            points = np.array(points)
         else:
             print("invalid file extension")
 

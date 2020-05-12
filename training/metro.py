@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-import pymesh
+#import pymesh
 from os.path import exists
 import os
 import subprocess
@@ -36,24 +36,38 @@ def isolate_files():
     """
     Utility fonction to generate the metro_file archive. Useless to all users but the author.
     """
-    with open('./dataset/data/metro_files/files-metro.txt', 'r') as file:
-        files = file.read().split('\n')
-    for file in files:
-        if file[-3:] == "ply":
-            cat = file.split('/')[0]
-            name = file.split('/')[1][:-4]
-            path_points = '/'.join(['.', 'dataset', 'data', 'ShapeNetV1PointCloud', cat, name + '.points.ply.npy'])
-            path_png = '/'.join(['.', 'dataset', 'data', 'ShapeNetV1Renderings', cat, name, "rendering", '00.png'])
+    # with open('./dataset/data/metro_files/files-metro.txt', 'r') as file:
+        # files = file.read().split('\n')
+    # for file in files:
+        # if file[-3:] == "ply":
+            # cat = file.split('/')[0]
+            # name = file.split('/')[1][:-4]
+            # path_points = '/'.join(['.', 'dataset', 'data', 'ShapeNetV1PointCloud', cat, name + '.points.ply.npy'])
+            # path_png = '/'.join(['.', 'dataset', 'data', 'ShapeNetV1Renderings', cat, name, "rendering", '00.png'])
 
-            path_obj = '/'.join(['', 'home', 'thibault', 'hdd', 'data', 'ShapeNetCore.v1', cat, name, 'model.obj'])
-            mesh = pymesh.load_mesh(path_obj)
-            points = np.load((path_points))
-            if not exists('/'.join(['.', 'dataset', 'data', 'metro_files', cat])):
-                os.mkdir('/'.join(['.', 'dataset', 'data', 'metro_files', cat]))
+            # path_obj = '/'.join(['', 'home', 'thibault', 'hdd', 'data', 'ShapeNetCore.v1', cat, name, 'model.obj'])
+            # mesh = pymesh.load_mesh(path_obj)
+            # points = np.load((path_points))
+            # if not exists('/'.join(['.', 'dataset', 'data', 'metro_files', cat])):
+                # os.mkdir('/'.join(['.', 'dataset', 'data', 'metro_files', cat]))
 
-            pymesh.save_mesh('/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.ply']), mesh, ascii=True)
-            np.save('/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.npy']), points)
-            copy(path_png, '/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.png']))
+            # vertex = [tuple(mesh.vertices[i]) for i in range(len(mesh.vertices))]
+            # vertex = np.array(vertex, dtype=[('x', 'f4'), ('y', 'f4'),  ('z', 'f4')])
+            # #print(vertex)
+
+            # face = [tuple([mesh.faces[i]]) for i in range(len(mesh.faces))]
+            # face = np.array(face,  dtype=[('vertex_indices', 'i4', (3,))])
+
+            # PlyData(
+                # [
+                    # PlyElement.describe(vertex, 'vertex'),
+                    # PlyElement.describe(face, 'face')
+                # ],
+                # text=True).write('/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.ply'])
+
+            # #pymesh.save_mesh('/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.ply']), mesh, ascii=True)
+            # np.save('/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.npy']), points)
+            # copy(path_png, '/'.join(['.', 'dataset', 'data', 'metro_files', cat, name + '.png']))
 
 
 def main():
