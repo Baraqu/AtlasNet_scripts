@@ -15,10 +15,13 @@ class TrainerIteration(object):
         Arrange to data to be fed to the network.
         :return:
         """
-        if self.opt.SVR:
-            self.data.network_input = self.data.image.to(self.opt.device)
-        else:
-            self.data.network_input = self.data.points.transpose(2, 1).contiguous().to(self.opt.device)
+        
+        self.data.network_input = (self.data.image.to(self.opt.device), self.data.points.transpose(2, 1).contiguous().to(self.opt.device))
+        
+        # if self.opt.SVR:
+        #     self.data.network_input = self.data.image.to(self.opt.device)
+        # else:
+        #     self.data.network_input = self.data.points.transpose(2, 1).contiguous().to(self.opt.device)
 
     def common_ops(self):
         """

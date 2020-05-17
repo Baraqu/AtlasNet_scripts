@@ -2,7 +2,7 @@ from model.atlasnet import Atlasnet
 from model.model_blocks import PointNet
 import torch.nn as nn
 import model.resnet as resnet
-
+from dataset.MVCNNLoader import *
 
 class EncoderDecoder(nn.Module):
     """
@@ -12,10 +12,14 @@ class EncoderDecoder(nn.Module):
 
     def __init__(self, opt):
         super(EncoderDecoder, self).__init__()
-        if opt.SVR:
-            self.encoder = resnet.resnet18(pretrained=False, num_classes=opt.bottleneck_size)
-        else:
-            self.encoder = PointNet(nlatent=opt.bottleneck_size)
+        
+        self.encoder1 = resnet.resnet18(pretrained=False, num_classes=opt.bottleneck_size)
+        self.encoder2 = MVCNN_Loader.cnet_2
+        
+        # if opt.SVR:
+        #     self.encoder = resnet.resnet18(pretrained=False, num_classes=opt.bottleneck_size)
+        # else:
+        #     self.encoder = PointNet(nlatent=opt.bottleneck_size)
 
         self.decoder = Atlasnet(opt)
         self.to(opt.device)
@@ -25,10 +29,15 @@ class EncoderDecoder(nn.Module):
         self.eval()
 
     def forward(self, x, train=True):
-        return self.decoder(self.encoder(x), train=train)
+        return self.decoder(self.encoderHybrid(x), train=train)
 
     def generate_mesh(self, x):
-        return self.decoder.generate_mesh(self.encoder(x))
+        return self.decoder.generate_mesh(self.encoderHybrid(x))
+    
+    # data comes from make_network_input
+    def encoderHybrid(x):
+        x_pointscloud, x_img = x
+        return torch.cat(self.encoder1(x_pointscloud), self.encoder2(x_img))
 
 
 def weights_init(m):
