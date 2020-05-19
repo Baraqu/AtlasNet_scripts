@@ -13,6 +13,7 @@ import json
 from termcolor import colored
 import dataset.pointcloud_processor as pointcloud_processor
 from copy import deepcopy
+from dataset.MVCNNLoader import *
 
 class ShapeNet(data.Dataset):
     """
@@ -195,17 +196,18 @@ class ShapeNet(data.Dataset):
         return_dict['points'] = points[:, :3].contiguous()
 
         # Image processing
-        if self.opt.SVR:
-            if self.train:
-                N = np.random.randint(1, self.num_image_per_object)
-                im = Image.open(join(return_dict['image_path'], ShapeNet.int2str(N) + ".png"))
-                im = self.dataAugmentation(im)  # random crop
-            else:
-                im = Image.open(join(return_dict['image_path'], ShapeNet.int2str(self.idx_image_val) + ".png"))
-                im = self.validating(im)  # center crop
-            im = self.transforms(im)  # scale
-            im = im[:3, :, :]
-            return_dict['image'] = im
+        # if self.opt.SVR:
+        # if self.train:
+        #     N = np.random.randint(1, self.num_image_per_object)
+        #     im = Image.open(join(return_dict['image_path'], ShapeNet.int2str(N) + ".png"))
+        #     im = self.dataAugmentation(im)  # random crop
+        # else:
+        #     im = Image.open(join(return_dict['image_path'], ShapeNet.int2str(self.idx_image_val) + ".png"))
+        #     im = self.validating(im)  # center crop
+        # im = self.transforms(im)  # scale
+        # im = im[:3, :, :]
+        return_dict['image'] = MVCNN_Loader.MVCNN_IMG_Loader()
+        
         return return_dict
 
     def __len__(self):
