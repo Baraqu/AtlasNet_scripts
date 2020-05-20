@@ -1,8 +1,9 @@
 from model.atlasnet import Atlasnet
 from model.model_blocks import PointNet
 import torch.nn as nn
+import torch
 import model.resnet as resnet
-from dataset.MVCNNLoader import *
+from model.MVCNNLoader import my_MVCNN as MVCNN
 
 class EncoderDecoder(nn.Module):
     """
@@ -13,8 +14,9 @@ class EncoderDecoder(nn.Module):
     def __init__(self, opt):
         super(EncoderDecoder, self).__init__()
         
-        self.encoder1 = resnet.resnet18(pretrained=False, num_classes=opt.bottleneck_size)
-        self.encoder2 = MVCNN_Loader.cnet_2
+        self.encoder1 = PointNet(nlatent=opt.bottleneck_size)
+        # initialize MVCNN
+        self.encoder2 = MVCNN()
         
         # if opt.SVR:
         #     self.encoder = resnet.resnet18(pretrained=False, num_classes=opt.bottleneck_size)
@@ -35,9 +37,13 @@ class EncoderDecoder(nn.Module):
         return self.decoder.generate_mesh(self.encoderHybrid(x))
     
     # data comes from make_network_input
-    def encoderHybrid(x):
-        x_pointscloud, x_img = x
-        return torch.cat(self.encoder1(x_pointscloud), self.encoder2(x_img))
+
+    def encoderHybrid(self, x):
+        x_img, x_pointscloud = x
+        feature_points = self.encoder1(x_pointscloud)
+        feature_images = self.encoder2(x_img)
+        print(feature_points.size(), feature_images.size())
+        return torch.cat((feature_points, feature_images), dim=1)
 
 
 def weights_init(m):

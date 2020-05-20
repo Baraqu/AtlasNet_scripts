@@ -16,7 +16,7 @@ class TrainerIteration(object):
         :return:
         """
         
-        self.data.network_input = (self.data.image.to(self.opt.device), self.data.points.transpose(2, 1).contiguous().to(self.opt.device))
+        self.data.network_input = (self.data.images.to(self.opt.device), self.data.points.transpose(2, 1).contiguous().to(self.opt.device))
         
         # if self.opt.SVR:
         #     self.data.network_input = self.data.image.to(self.opt.device)

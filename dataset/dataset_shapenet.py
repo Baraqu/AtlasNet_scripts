@@ -2,8 +2,9 @@ import torch.utils.data as data
 import os.path
 import torch
 import torchvision.transforms as transforms
+from torch.autograd import Variable
 import numpy as np
-import os
+import os, glob
 from PIL import Image
 import auxiliary.my_utils as my_utils
 import pickle
@@ -13,7 +14,6 @@ import json
 from termcolor import colored
 import dataset.pointcloud_processor as pointcloud_processor
 from copy import deepcopy
-from dataset.MVCNNLoader import *
 
 class ShapeNet(data.Dataset):
     """
@@ -206,7 +206,35 @@ class ShapeNet(data.Dataset):
         #     im = self.validating(im)  # center crop
         # im = self.transforms(im)  # scale
         # im = im[:3, :, :]
-        return_dict['image'] = MVCNN_Loader.MVCNN_IMG_Loader()
+
+        # read in 12 images
+        NUM_VIEWS = 12
+        WIDTH = 224
+        HEIGHT = 224
+
+        files = glob.glob(os.path.join(return_dict['image_path'], '*.png'))
+
+        rand_idx = np.random.permutation(len(files))
+        files = [files[rand_idx[i]] for i in range(NUM_VIEWS)]
+        
+        imgs = []
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225])
+        ])
+        for file in files:
+            img = Image.open(file).convert('RGB').resize((WIDTH, HEIGHT))
+            im = transform(img)
+            imgs.append(im)
+        
+        data = torch.stack(imgs)
+        # 'mvcnn'
+        V,C,H,W = data.size()
+        in_data = Variable(data).view(-1,C,H,W).cuda()
+
+        return_dict['images'] = in_data
+        
         
         return return_dict
 

@@ -18,8 +18,8 @@ def parser():
     # Training parameters
     parser.add_argument("--no_learning", action="store_true", help="Learning mode (batchnorms...)")
     parser.add_argument("--train_only_encoder", action="store_true", help="only train the encoder")
-    parser.add_argument('--batch_size', type=int, default=32, help='input batch size')
-    parser.add_argument('--batch_size_test', type=int, default=32, help='input batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='input batch size')
+    parser.add_argument('--batch_size_test', type=int, default=4, help='input batch size')
     parser.add_argument('--workers', type=int, help='number of data loading workers', default=0)
     parser.add_argument('--nepoch', type=int, default=150, help='number of epochs to train for')
     parser.add_argument('--start_epoch', type=int, default=0, help='number of epochs to train for')
@@ -70,7 +70,7 @@ def parser():
                         help='dim_out_patch')
     parser.add_argument('--multi_gpu', nargs='+', type=int, default=[0], help='Use multiple gpus')
     parser.add_argument("--remove_all_batchNorms", action="store_true", help="Replace all batchnorms by identity")
-    parser.add_argument('--bottleneck_size', type=int, default=1024, help='dim_out_patch')
+    parser.add_argument('--bottleneck_size', type=int, default=5120, help='dim_out_patch')
     parser.add_argument('--activation', type=str, default='relu',
                         choices=["relu", "sigmoid", "softplus", "logsigmoid", "softsign", "tanh"], help='dim_out_patch')
 
