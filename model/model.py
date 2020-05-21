@@ -14,7 +14,8 @@ class EncoderDecoder(nn.Module):
     def __init__(self, opt):
         super(EncoderDecoder, self).__init__()
         
-        self.encoder1 = PointNet(nlatent=opt.bottleneck_size)
+        MVCNN_LATENT_SIZE = 4096
+        self.encoder1 = PointNet(nlatent=opt.bottleneck_size - MVCNN_LATENT_SIZE)
         # initialize MVCNN
         self.encoder2 = MVCNN()
         
