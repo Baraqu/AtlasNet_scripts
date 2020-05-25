@@ -52,7 +52,7 @@ class TrainerIteration(object):
         self.print_iteration_stats(self.data.loss)
 
     def visualize(self):
-        if self.iteration % 50 == 1:
+        if False:  #self.iteration % 50 == 1:
             tmp_string = "train" if self.flags.train else "test"
             self.visualizer.show_pointcloud(self.data.points[0], title=f"GT {tmp_string}")
             self.visualizer.show_pointcloud(self.data.pointsReconstructed[0], title=f"Reconstruction {tmp_string}")

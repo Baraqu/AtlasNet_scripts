@@ -43,7 +43,6 @@ class EncoderDecoder(nn.Module):
         x_img, x_pointscloud = x
         feature_points = self.encoder1(x_pointscloud)
         feature_images = self.encoder2(x_img)
-        print(feature_points.size(), feature_images.size())
         return torch.cat((feature_points, feature_images), dim=1)
 
 

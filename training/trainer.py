@@ -161,10 +161,11 @@ class Trainer(TrainerAbstract, TrainerLoss, TrainerIteration, TrainerDataset, Tr
             mesh = ms.Mesh(vertices=unnormalized_vertices.squeeze().numpy(), faces=mesh.faces)
 
         if self.opt.demo:
-            path = demo_path.split('.')
-            path[-2] += "AtlasnetReconstruction"
-            path[-1] = "ply"
-            path = ".".join(path)
+            # path = demo_path.split('.')
+            # path[-2] += "AtlasnetReconstruction"
+            # path[-1] = "ply"
+            # path = ".".join(path)
+            path = demo_path + "_AtlasnetReconstruction.ply"
         else:
             path = '/'.join([self.opt.training_media_path, str(self.flags.media_count)]) + ".ply"
             self.flags.media_count += 1

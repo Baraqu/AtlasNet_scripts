@@ -30,6 +30,12 @@ class ShapeNet(data.Dataset):
         self.init_normalization()
         self.init_singleview()
 
+        # MVCNN parameters
+        # read in 12 images
+        self.NUM_VIEWS = 12
+        self.WIDTH = 224
+        self.HEIGHT = 224
+
         if not opt.demo:
             my_utils.red_print('Create Shapenet Dataset...')
             # Define core path array
@@ -207,15 +213,10 @@ class ShapeNet(data.Dataset):
         # im = self.transforms(im)  # scale
         # im = im[:3, :, :]
 
-        # read in 12 images
-        NUM_VIEWS = 12
-        WIDTH = 224
-        HEIGHT = 224
-
         files = glob.glob(os.path.join(return_dict['image_path'], '*.png'))
 
         rand_idx = np.random.permutation(len(files))
-        files = [files[rand_idx[i]] for i in range(NUM_VIEWS)]
+        files = [files[rand_idx[i]] for i in range(self.NUM_VIEWS)]
         
         imgs = []
         transform = transforms.Compose([
@@ -224,7 +225,7 @@ class ShapeNet(data.Dataset):
                                          std=[0.229, 0.224, 0.225])
         ])
         for file in files:
-            img = Image.open(file).convert('RGB').resize((WIDTH, HEIGHT))
+            img = Image.open(file).convert('RGB').resize((self.WIDTH, self.HEIGHT))
             im = transform(img)
             imgs.append(im)
         
@@ -249,11 +250,45 @@ class ShapeNet(data.Dataset):
             return str(N)
 
     def load(self, path):
-        ext = path.split('.')[-1]
-        if ext == "npy" or ext == "ply" or ext == "obj":
-            return self.load_point_input(path)
-        else:
-            return self.load_image(path)
+        '''
+            path: ShapeNetV1PointCloud\{class_number}\{instance_number}
+        '''
+        # points_path = os.path.join(path + '.points.ply.npy')
+        path = 'K:\\T800\\Cube0\\Photogram'
+        points_path = os.path.join(path, 'model_modified.obj')
+        return_dict = self.load_point_input(points_path)
+        # get 12 images
+        # images_path = os.path.join(path.replace('ShapeNetV1PointCloud', 'ShapeNetV1Renderings'), 'rendering')
+        images_path = 'K:\\T800\\Cube0\\Images'
+        files = glob.glob(os.path.join(images_path, '*.png'))
+
+        rand_idx = np.random.permutation(len(files))
+        files = [files[rand_idx[i]] for i in range(self.NUM_VIEWS)]
+        
+        imgs = []
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225])
+        ])
+        for file in files:
+            img = Image.open(file).convert('RGB').resize((self.WIDTH, self.HEIGHT))
+            im = transform(img)
+            imgs.append(im)
+        
+        data = torch.stack(imgs)
+        # 'mvcnn'
+        V,C,H,W = data.size()
+        in_data = Variable(data).view(1, -1,C,H,W).cuda()
+
+        return_dict['images'] = in_data
+        return return_dict
+
+        # ext = path.split('.')[-1]
+        # if ext == "npy" or ext == "ply" or ext == "obj":
+        #     return self.load_point_input(path)
+        # else:
+        #     return self.load_image(path)
 
     def load_point_input(self, path):
         ext = path.split('.')[-1]
